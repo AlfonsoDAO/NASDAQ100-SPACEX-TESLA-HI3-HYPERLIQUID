@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SpaceX · xStocks · Solana Dashboard</title>
+  <meta name="description" content="Panel HTML sobre SpaceX IPO, SPCXx en xStocks, Solana y sinergias con Tesla." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root,[data-theme="light"]{
+      --bg:#f7f6f2;--surface:#fbfbf9;--surface2:#f1efe9;--surface3:#e9e4da;--text:#191a1f;--muted:#646b78;--line:#d4cfbf;
+      --primary:#0b7c83;--primary2:#28c9d1;--blue:#3d7cff;--violet:#8c5bff;--gold:#cb9f2e;--green:#198754;--red:#c13f59;
+      --shadow:0 12px 40px rgba(16,20,28,.12);--radius:22px;--radius-sm:14px;
+    }
+    [data-theme="dark"]{
+      --bg:#0b0f16;--surface:#101723;--surface2:#151f2e;--surface3:#1c2a3d;--text:#eef3ff;--muted:#a6b3c7;--line:rgba(196,210,234,.14);
+      --primary:#31d1d9;--primary2:#6ce5ff;--blue:#6aa6ff;--violet:#9f7bff;--gold:#ffce5a;--green:#37d28d;--red:#ff6e8a;
+      --shadow:0 20px 60px rgba(0,0,0,.38);--radius:22px;--radius-sm:14px;
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;font-family:Inter,system-ui,sans-serif;background:
+      radial-gradient(circle at top left, rgba(49,209,217,.16), transparent 30%),
+      radial-gradient(circle at top right, rgba(159,123,255,.12), transparent 28%),
+      linear-gradient(180deg,#0b0f16 0%,#0d1320 100%);color:var(--text);line-height:1.6}
+    a{color:var(--primary2);text-decoration:none} a:hover{text-decoration:underline}
+    .wrap{width:min(1220px,calc(100% - 32px));margin:auto}
+    .topbar{position:sticky;top:0;backdrop-filter:blur(18px);background:rgba(11,15,22,.72);border-bottom:1px solid var(--line);z-index:20}
+    .topbar-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.02em}
+    .logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--violet));display:grid;place-items:center;box-shadow:var(--shadow)}
+    .logo svg{width:24px;height:24px}
+    .nav{display:flex;flex-wrap:wrap;gap:10px}
+    .nav a{padding:10px 14px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.03);color:var(--text);font-size:14px}
+    .hero{padding:56px 0 30px}
+    .kicker{display:inline-flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid rgba(108,229,255,.25);background:rgba(49,209,217,.08);border-radius:999px;color:var(--primary2);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+    h1{font-family:"Space Grotesk",Inter,sans-serif;font-size:clamp(2.4rem,6vw,5rem);line-height:1.02;margin:18px 0 16px;max-width:11ch}
+    .lede{font-size:clamp(1.02rem,1.5vw,1.18rem);color:var(--muted);max-width:78ch}
+    .grid{display:grid;gap:18px}
+    .hero-grid{grid-template-columns:1.35fr .95fr;align-items:start;margin-top:28px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .panel{padding:22px}
+    .metric-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .metric{padding:16px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01));border:1px solid var(--line)}
+    .metric .label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px}
+    .metric .value{font-family:"Space Grotesk",Inter,sans-serif;font-size:clamp(1.4rem,3vw,2.2rem);font-weight:700}
+    .metric .delta{margin-top:8px;font-size:13px;color:var(--green)}
+    .section{padding:18px 0 10px}
+    .section h2{font-family:"Space Grotesk",Inter,sans-serif;font-size:clamp(1.4rem,2vw,2rem);margin:0 0 10px}
+    .section p{color:var(--muted);max-width:78ch}
+    .chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    .chip{padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.03);font-size:13px;color:#dfe9ff}
+    .table-shell{overflow:auto;border-radius:24px;border:1px solid var(--line);box-shadow:var(--shadow);background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01))}
+    table{width:100%;border-collapse:separate;border-spacing:0;min-width:1000px}
+    thead th{position:sticky;top:0;background:linear-gradient(180deg,#132033,#11192a);font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#a9c5ff;padding:16px 14px;text-align:left;border-bottom:1px solid var(--line)}
+    tbody td{padding:16px 14px;border-bottom:1px solid var(--line);vertical-align:top;font-size:14px}
+    tbody tr:nth-child(odd){background:rgba(255,255,255,.02)} tbody tr:hover{background:rgba(108,229,255,.05)}
+    .token{display:flex;align-items:flex-start;gap:12px}
+    .token-badge{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-weight:800;color:#08111d;background:linear-gradient(135deg,var(--gold),#fff0b3)}
+    .tiny{font-size:12px;color:var(--muted)} .strong{font-weight:800} .good{color:var(--green)} .warn{color:var(--gold)} .risk{color:var(--red)}
+    .list{display:grid;gap:14px}
+    .list-item{padding:18px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.02)}
+    .cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .timeline{display:grid;gap:14px;margin-top:16px}
+    .step{display:grid;grid-template-columns:54px 1fr;gap:14px;align-items:start}
+    .step .dot{width:54px;height:54px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(49,209,217,.22),rgba(159,123,255,.2));border:1px solid var(--line);font-weight:800;color:var(--primary2)}
+    .quote{padding:22px;border-left:4px solid var(--primary);background:linear-gradient(180deg,rgba(49,209,217,.08),rgba(49,209,217,.02));border-radius:0 18px 18px 0}
+    .footer{padding:24px 0 60px;color:var(--muted);font-size:13px}
+    .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px}.btn{display:inline-flex;align-items:center;gap:10px;padding:12px 16px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--text);font-weight:700}.btn.primary{background:linear-gradient(135deg,var(--primary),#0a9da6);color:#041016;border-color:transparent}
+    code.inline{padding:2px 8px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid var(--line);font-size:12px}
+    @media (max-width:960px){.hero-grid,.cols-2{grid-template-columns:1fr} .nav{display:none} h1{max-width:100%}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3c2.4 2.3 4 5.8 4 9.2 0 3.7-1.6 6.7-4 8.8-2.4-2.1-4-5.1-4-8.8C8 8.8 9.6 5.3 12 3Z" fill="currentColor" opacity=".9"></path>
+            <path d="M8.7 12.5h6.6M9.8 15.6h4.4"></path>
+          </svg>
+        </div>
+        <div>
+          <div>SpaceX · xStocks · Solana</div>
+          <div class="tiny">Panel HTML listo para StackBlitz</div>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="#tabla">Tabla</a>
+        <a href="#tesis">Tesis</a>
+        <a href="#tutorial">Tutorial</a>
+        <a href="#riesgos">Riesgos</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="kicker">SPCX · $SPCXx · Solana · Wall Street</div>
+      <h1>Cuando el cohete entra en bolsa, la liquidez no despega toda el primer día.</h1>
+      <p class="lede">Este módulo está pensado para que lo pegues en StackBlitz como <strong>Static HTML</strong>. Es la opción más limpia porque todo está resuelto en un solo archivo: diseño, tabla, estilo visual y texto analítico. Si luego quieres añadir filtros, búsqueda o datos en vivo, entonces sí conviene migrarlo a <strong>Vanilla JavaScript</strong>. Aquí la prioridad es: lectura, estética y claridad operativa.</p>
+
+      <div class="grid hero-grid">
+        <article class="card panel">
+          <div class="metric-grid">
+            <div class="metric"><div class="label">IPO price</div><div class="value">$135</div><div class="delta">Salida oficial del IPO</div></div>
+            <div class="metric"><div class="label">Open</div><div class="value">$150</div><div class="delta">+11,1% en apertura</div></div>
+            <div class="metric"><div class="label">Close</div><div class="value">$161.11</div><div class="delta">+19,34% primer día</div></div>
+            <div class="metric"><div class="label">Capital raised</div><div class="value">$75B</div><div class="delta">Mayor IPO registrado</div></div>
+          </div>
+          <div class="chips">
+            <span class="chip">555.6M acciones</span>
+            <span class="chip">Retail: 25–30%</span>
+            <span class="chip">Demanda 2x objetivo</span>
+            <span class="chip">xAI + SpaceX</span>
+          </div>
+        </article>
+
+        <aside class="card panel">
+          <h2 style="margin-top:0">Lectura rápida</h2>
+          <p><span class="strong">Idea central:</span> el viernes fue el precio del estreno; el lunes empieza el precio de la digestión. Parte del capital institucional y del smart money no persigue la primera vela: espera menos ruido, más profundidad y una entrada más limpia.</p>
+          <div class="quote">“No seas el primero en establecer una inversión, ni el último en hacerlo.” Esa frase encaja aquí porque el impulso ya habló el viernes; ahora toca ver quién compra convicción y quién compra titulares.</div>
+          <div class="cta">
+            <a class="btn primary" href="#tabla">Ver tabla principal</a>
+            <a class="btn" href="https://xstocks.fi/" target="_blank" rel="noopener noreferrer">Web xStocks</a>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section" id="tabla">
+      <h2>Tabla maestra</h2>
+      <p>La tabla mezcla datos duros del IPO, lectura de blockchain, utilidad del tokenizado y tesis estratégica. En el campo del contrato de Solana se deja señalado que el identificador debe confirmarse en el explorador oficial del token, porque la verificación final siempre debe hacerse en la fuente primaria antes de publicar o operar.</p>
+      <div class="table-shell">
+        <table>
+          <thead>
+            <tr>
+              <th>Activo</th>
+              <th>Qué es</th>
+              <th>Mercado / chain</th>
+              <th>IPO / tokenización</th>
+              <th>Asignación y flujos</th>
+              <th>Utilidad / respaldo</th>
+              <th>Explorador / verificación</th>
+              <th>Lectura semanal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="token">
+                  <div class="token-badge">S</div>
+                  <div>
+                    <div class="strong">$SPCX</div>
+                    <div class="tiny">Ticker Nasdaq · SpaceX</div>
+                  </div>
+                </div>
+              </td>
+              <td>Acción cotizada de SpaceX tras su debut en Nasdaq. Ya no es solo cohetes: integra Starlink y la tesis xAI tras la fusión anunciada en 2026.</td>
+              <td><span class="strong">Nasdaq</span><br><span class="tiny">Mercado tradicional</span></td>
+              <td><span class="strong">IPO:</span> 12 Jun 2026<br>Precio salida: <span class="good">$135</span><br>Apertura: $150<br>Cierre 1ª sesión: $161.11</td>
+              <td>Raise: <span class="strong">$75B</span><br>555.6M acciones vendidas<br>Retail reservado: <span class="warn">25–30%</span><br>Demanda reportada: ~2x el objetivo</td>
+              <td>Representa equity bursátil directo. La historia que compra el mercado es una mezcla de lanzamientos, Starlink, IA y futura infraestructura orbital.</td>
+              <td>Verificar en Nasdaq y filings SEC. Para publicación, enlaza ficha oficial del valor y no replicadores.</td>
+              <td><span class="strong">Base case:</span> continuidad de interés el lunes, pero con volatilidad más táctica. Parte de la liquidez aún no ha entrado: espera compresión de ruido y mejor price discovery.</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="token">
+                  <div class="token-badge" style="background:linear-gradient(135deg,var(--primary2),#dffcff)">$</div>
+                  <div>
+                    <div class="strong">$SPCXx</div>
+                    <div class="tiny">xStocks tokenizado</div>
+                  </div>
+                </div>
+              </td>
+              <td>Versión tokenizada de SpaceX dentro del framework xStocks. Permite exposición onchain al activo desde wallet, con uso potencial en DeFi y operativa 24/7.</td>
+              <td><span class="strong">Solana</span><br>xStocks / SPL token<br>Pares habituales: USDC y ecosistema Solana</td>
+              <td>Lanzado al mercado en sincronía con el evento de cotización del activo subyacente. Objetivo: llevar la narrativa de Wall Street a la capa de liquidez onchain.</td>
+              <td>El flujo inicial vino del cruce entre curiosidad retail, capital nativo cripto y arbitraje narrativo. Queda capital pendiente de reubicación desde otros tokens, otras acciones y stablecoins.</td>
+              <td><span class="strong">Respaldo:</span> xStocks comunica respaldo 1:1 sobre activos subyacentes en custodia regulada dentro del framework.<br><span class="strong">Utilidad:</span> exposición, trading, colateral potencial, pools y puntos si el protocolo lo habilita.</td>
+              <td><span class="strong">Contrato Solana:</span> confirmar en fuente oficial de xStocks / CoinGecko / Solscan antes de publicar.<br><a href="https://solscan.io/" target="_blank" rel="noopener noreferrer">Solscan</a> · <a href="https://xstocks.fi/" target="_blank" rel="noopener noreferrer">xStocks</a><br><span class="tiny">Nunca copies un mint no verificado.</span></td>
+              <td>Si Nasdaq abre fuerte, $SPCXx puede adelantarse o amplificar la narrativa. Si hay toma de beneficios en bolsa, la chain puede ser el primer sitio donde se vea la ansiedad… y también donde aparezca la oportunidad.</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="token">
+                  <div class="token-badge" style="background:linear-gradient(135deg,var(--violet),#efe7ff)">X</div>
+                  <div>
+                    <div class="strong">xStocks</div>
+                    <div class="tiny">Infraestructura RWA</div>
+                  </div>
+                </div>
+              </td>
+              <td>Framework de acciones y ETFs tokenizados para llevar activos tipo Nasdaq / S&amp;P / megacaps a blockchains como Solana.</td>
+              <td>Solana y otras cadenas del ecosistema xStocks</td>
+              <td>La tesis no es solo tokenizar acciones, sino <span class="strong">convertir liquidez bursátil en liquidez programable</span>.</td>
+              <td>Beneficia a traders DeFi, holders que quieren rendimiento, arbitrajistas entre CEX/DEX y usuarios que no quieren depender del horario tradicional.</td>
+              <td>Respaldo mediante estructura de custodia y emisión del protocolo; utilidad en exposición onchain, integración con pools y potencial sistema de puntos.</td>
+              <td><a href="https://xstocks.fi/" target="_blank" rel="noopener noreferrer">Sitio oficial</a> · <a href="https://www.coingecko.com/en/categories/xstocks-ecosystem?items=300" target="_blank" rel="noopener noreferrer">CoinGecko categoría</a></td>
+              <td>Si el interés por $SPCX sostiene titulares, arrastra al resto del ecosistema: $TSLAx, $QQQx, $NVDAx y otros RWA tienden a ganar atención, profundidad y narrativas cruzadas.</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="token">
+                  <div class="token-badge" style="background:linear-gradient(135deg,#7ee4a6,#f1ffdf)">T</div>
+                  <div>
+                    <div class="strong">$TSLA / $TSLAx</div>
+                    <div class="tiny">Sinergia clave</div>
+                  </div>
+                </div>
+              </td>
+              <td>Tesla es la pieza que conecta energía, baterías, IA física, robotaxis y potencial soporte energético para infraestructuras SpaceX.</td>
+              <td>Nasdaq / Solana vía xStocks</td>
+              <td>No es parte del IPO, pero sí del marco narrativo de valoración cruzada.</td>
+              <td>SpaceX ya ha comprado Megapacks de Tesla; eso convierte una sinergia conceptual en revenue verificable dentro del ecosistema Musk.</td>
+              <td>La lógica es clara: si SpaceX industrializa datos e IA orbital, Tesla Energy y Tesla AI pueden capturar parte del valor aguas abajo.</td>
+              <td>Ver Nasdaq, xStocks y exploradores oficiales por token.</td>
+              <td>Una subida limpia de SpaceX puede contagiar a Tesla por narrativa de ecosistema, aunque una rotación de pesos dentro de índices también puede generar sesiones de ida y vuelta.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section" id="tesis">
+      <h2>Tesis operativa y narrativa</h2>
+      <div class="grid cols-2">
+        <div class="list">
+          <div class="list-item">
+            <div class="strong">1. Lo del viernes fue precio de estreno; lo del lunes será precio de convicción.</div>
+            <p>No toda la liquidez que salió de otras acciones, de stablecoins o de posiciones cripto ha entrado todavía en SpaceX. Mucho capital serio espera menos volatilidad para construir una posición con menos ruido y mejor lectura de profundidad.</p>
+          </div>
+          <div class="list-item">
+            <div class="strong">2. $SPCXx convierte un relato bursátil en una tesis DeFi.</div>
+            <p>La ventaja de Solana aquí no es solo velocidad: es permitir que la narrativa de una megacap espacial viva 24/7, se use con USDC y se mezcle con pools, farming y colateral programable. TradFi ve una acción; blockchain ve una pieza modular de liquidez.</p>
+          </div>
+          <div class="list-item">
+            <div class="strong">3. La mayor jugada quizá no sea el cohete: puede ser la electricidad que ya no pagas en la Tierra.</div>
+            <p>Si los centros de datos orbitales funcionan, SpaceX no solo reduce dependencia de la factura energética y del cooling terrestre: redefine los márgenes de toda la computación intensiva. Y cuando cambian los márgenes, cambian las valoraciones. Wall Street lo descubre tarde; el capital paciente suele llegar antes.</p>
+          </div>
+        </div>
+        <div class="list">
+          <div class="list-item">
+            <div class="strong">4. Bitcoin también entra en la conversación.</div>
+            <p>La minería y el cómputo de IA comparten el mismo dolor: energía cara y calor caro. En el espacio, la energía solar y el entorno térmico alteran la ecuación. Aún es una tesis de horizonte, no una realidad productiva inmediata; pero abre una puerta de márgenes más altos para centros de IA y, en teoría, también para infraestructura de hashing.</p>
+          </div>
+          <div class="list-item">
+            <div class="strong">5. Nombre para la nueva era:</div>
+            <p><span class="strong">La Era Orbital Autónoma.</span> No es ya la transición de analógico a digital. Es el salto desde sistemas conectados a sistemas que se coordinan, se optimizan y operan con infraestructura distribuida entre Tierra, nube y órbita.</p>
+          </div>
+          <div class="list-item">
+            <div class="strong">6. Lo que no conviene vender como certeza.</div>
+            <p>Los centros de datos espaciales todavía cargan riesgo tecnológico y comercial. La tesis es potente, pero no está madura. Conviene presentarla como ventaja estratégica potencial, no como flujo de caja resuelto. El mercado castiga tanto al ingenuo como al exagerado; a veces al ingenuo más rápido.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="tutorial">
+      <h2>Tutorial conceptual: cómo sería desplegar un centro de datos orbital</h2>
+      <p>Esto no es una guía de ingeniería real de lanzamiento, sino un esquema claro para explicar la tesis en tu texto. La empresa más lógica para intentar el primer despliegue comercial sería la propia combinación <strong>SpaceX + xAI</strong>, porque controla lanzador, red satelital, narrativa de demanda y acceso a capital.</p>
+      <div class="timeline">
+        <div class="step"><div class="dot">01</div><div class="list-item"><div class="strong">Diseñar el módulo</div><p>Unidad orbital con paneles solares, radiadores térmicos, blindaje, interconexión óptica, compute especializado y redundancia. Aquí el coste se dispara porque no vale hardware “de rack” sin adaptar: hay que diseñar para vibración, radiación y mantenimiento remoto.</p></div></div>
+        <div class="step"><div class="dot">02</div><div class="list-item"><div class="strong">Definir la carga útil</div><p>No mandarías un hyperscale datacenter entero de golpe. Empezarías con nodos de inferencia o procesamiento específico de alto margen, donde el valor por vatio sea muy alto. El modelo inicial sería premium, no masivo.</p></div></div>
+        <div class="step"><div class="dot">03</div><div class="list-item"><div class="strong">Lanzar con Starship</div><p>La ventaja estructural de SpaceX es que no alquila el ascensor: posee el ascensor. Si Starship baja el coste por kilogramo, la barrera de entrada para computación orbital cae con fuerza.</p></div></div>
+        <div class="step"><div class="dot">04</div><div class="list-item"><div class="strong">Conectar a Starlink</div><p>La red satelital sería el backhaul natural. Menos fricción en transmisión de datos, más integración vertical y más capacidad de empaquetar servicio + compute + conectividad.</p></div></div>
+        <div class="step"><div class="dot">05</div><div class="list-item"><div class="strong">Vender la capacidad</div><p>Primero a uso interno de xAI, después a clientes de IA con workloads muy rentables. Más adelante podría abrirse a defensa, simulación, investigación o servicios cloud de nicho.</p></div></div>
+      </div>
+      <div class="quote" style="margin-top:16px">Coste orientativo de una primera fase piloto: imposible fijarlo con rigor público hoy, pero no son “unos pocos millones”. Entre diseño específico, lanzamiento, energía, comunicaciones y redundancia, la cifra razonable para una prueba seria se movería en la banda de <strong>cientos de millones de dólares</strong>, no en presupuestos de laboratorio.</div>
+    </section>
+
+    <section class="section" id="riesgos">
+      <h2>Riesgos, cautelas y cómo presentarlo</h2>
+      <div class="grid cols-2">
+        <div class="list-item">
+          <div class="strong">Qué copiar en StackBlitz</div>
+          <p>1) Crea un proyecto de <strong>Static HTML</strong>.<br>2) Pega todo este archivo en tu HTML principal.<br>3) Si quieres cambiar colores, toca las variables CSS del bloque <code class="inline">:root</code>.<br>4) Si luego quieres tablas dinámicas o fetch de precios, ahí sí migras a <strong>Vanilla JavaScript</strong>.</p>
+        </div>
+        <div class="list-item">
+          <div class="strong">Qué debes verificar antes de publicar</div>
+          <p>Contrato SPL exacto de $SPCXx, enlace oficial del explorador, precio actual actualizado, y cualquier cifra de flujos o holders si la conviertes en afirmación cerrada. La regla es simple: <span class="strong">para opinar, basta una tesis; para afirmar, hace falta una fuente primaria.</span></p>
+        </div>
+      </div>
+      <div class="chips" style="margin-top:18px">
+        <span class="chip">No es consejo de inversión</span>
+        <span class="chip">Verifica mint oficial</span>
+        <span class="chip">Mercado abierto = volatilidad real</span>
+        <span class="chip">IPO ≠ price discovery completo</span>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p><strong>Nota editorial:</strong> este panel está diseñado para acompañar un artículo, no para sustituirlo. Su función es condensar la tesis, darle estructura visual y permitir que el lector entienda de un vistazo cómo se conectan Nasdaq, Solana, xStocks, Tesla, SpaceX y la narrativa de centros de datos orbitales. Mantén siempre la verificación final del contrato y del explorador en la fuente oficial antes de distribuirlo públicamente.</p>
+    </footer>
+  </main>
+</body>
+</html>
