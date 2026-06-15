@@ -1,4 +1,4 @@
-# NASDAQ100-SPACEX-TESLA-HI3-HYPERLIQUID
+# NASDAQ100-SPACEX-TESLA-JUNE
 Dashboard HTML sobre SpaceX IPO, $SPCXx tokenizado en xStocks/Solana,  sinergias Tesla-SpaceX y análisis de mercados. Análisis financiero y DeFi.
 
 # 🚀 SpaceX · xStocks · Solana — Dashboard de Análisis
